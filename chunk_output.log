@@ -1,0 +1,8 @@
+Chunking book: physical-ai-robotics v1.0.0
+Source directory: ../docs/chapters
+
+Processing 01-introduction.md...
+  \u2192 21 chunks created
+
+Total chunks created: 21
+Output written to: chunks_new.json
