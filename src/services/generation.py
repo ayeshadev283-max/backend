@@ -2,7 +2,7 @@
 import logging
 import time
 from typing import List, Dict, Any
-from google import genai
+from google import generativeai as genai
 
 from ..models.config import settings
 from ..config.prompts import format_system_prompt, format_retrieved_chunks

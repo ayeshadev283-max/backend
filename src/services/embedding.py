@@ -2,7 +2,7 @@
 import logging
 import time
 from typing import List
-from google import genai
+from google import generativeai as genai
 
 from ..models.config import settings
 
