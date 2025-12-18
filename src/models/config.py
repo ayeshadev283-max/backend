@@ -6,18 +6,18 @@ from pydantic import Field
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # Google Gemini Configuration
-    google_api_key: str = Field(..., env="GOOGLE_API_KEY")
-    google_embedding_model: str = Field(
-        default="models/text-embedding-004",
-        env="GOOGLE_EMBEDDING_MODEL"
+    # Cohere Configuration
+    cohere_api_key: str = Field(..., env="COHERE_API_KEY")
+    cohere_embedding_model: str = Field(
+        default="embed-english-v3.0",
+        env="COHERE_EMBEDDING_MODEL"
     )
-    google_generation_model: str = Field(
-        default="gemini-1.5-flash",
-        env="GOOGLE_GENERATION_MODEL"
+    cohere_generation_model: str = Field(
+        default="command-r",
+        env="COHERE_GENERATION_MODEL"
     )
-    google_max_tokens: int = Field(default=500, env="GOOGLE_MAX_TOKENS")
-    google_temperature: float = Field(default=0.0, env="GOOGLE_TEMPERATURE")
+    cohere_max_tokens: int = Field(default=500, env="COHERE_MAX_TOKENS")
+    cohere_temperature: float = Field(default=0.0, env="COHERE_TEMPERATURE")
 
     # Qdrant Configuration
     qdrant_url: str = Field(..., env="QDRANT_URL")

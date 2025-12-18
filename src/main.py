@@ -38,8 +38,8 @@ async def lifespan(app: FastAPI):
             qdrant_client.connect()
             logger.info("Connected to Qdrant")
 
-            # Ensure Qdrant collection exists (768 for Google text-embedding-004)
-            qdrant_client.ensure_collection(vector_size=768)
+            # Ensure Qdrant collection exists (1024 for Cohere embed-english-v3.0)
+            qdrant_client.ensure_collection(vector_size=1024)
             logger.info("Qdrant collection ready")
 
         except Exception as e:
@@ -125,7 +125,7 @@ async def health_check():
     # Check database connections
     db_status = "healthy"
     vector_db_status = "healthy"
-    openai_status = "healthy"  # Placeholder - would need actual check
+    cohere_status = "healthy"  # Placeholder - would need actual check
 
     try:
         # Test Postgres connection
@@ -155,7 +155,7 @@ async def health_check():
         "services": {
             "database": db_status,
             "vector_db": vector_db_status,
-            "openai_api": openai_status
+            "cohere_api": cohere_status
         },
         "version": "1.0.0"
     }

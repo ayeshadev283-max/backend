@@ -1,8 +1,8 @@
-"""Embedding service with Google Gemini text-embedding-004 integration."""
+"""Embedding service with Cohere integration."""
 import logging
 import time
 from typing import List
-from google import generativeai as genai
+import cohere
 
 from ..models.config import settings
 
@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class EmbeddingService:
-    """Service for generating text embeddings using Google Gemini API."""
+    """Service for generating text embeddings using Cohere API."""
 
     def __init__(self):
-        """Initialize Google Gemini client."""
-        genai.configure(api_key=settings.google_api_key)
-        self.model = settings.google_embedding_model
+        """Initialize Cohere client."""
+        self.client = cohere.Client(settings.cohere_api_key)
+        self.model = settings.cohere_embedding_model
 
     def embed_text(
         self,
@@ -30,7 +30,7 @@ class EmbeddingService:
             max_retries: Maximum number of retry attempts
 
         Returns:
-            Embedding vector (768 dimensions for text-embedding-004)
+            Embedding vector (1024 dimensions for embed-english-v3.0)
         """
         return self.embed_batch([text], max_retries=max_retries)[0]
 
@@ -51,15 +51,14 @@ class EmbeddingService:
         """
         for attempt in range(max_retries):
             try:
-                embeddings = []
+                # Cohere can process multiple texts at once
+                response = self.client.embed(
+                    texts=texts,
+                    model=self.model,
+                    input_type="search_document"  # Use for indexing documents
+                )
 
-                # Google's embedding API processes one text at a time
-                for text in texts:
-                    result = genai.embed_content(
-                        model=self.model,
-                        content=text
-                    )
-                    embeddings.append(result['embedding'])
+                embeddings = response.embeddings
 
                 logger.info(
                     f"Generated {len(embeddings)} embeddings "
@@ -69,7 +68,8 @@ class EmbeddingService:
                 return embeddings
 
             except Exception as e:
-                if "RESOURCE_EXHAUSTED" in str(e) or "quota" in str(e).lower():
+                error_str = str(e).lower()
+                if "rate" in error_str or "quota" in error_str or "limit" in error_str:
                     if attempt < max_retries - 1:
                         # Exponential backoff: 1s, 2s, 4s
                         wait_time = 2 ** attempt
@@ -99,14 +99,14 @@ class EmbeddingService:
     def embed_chunks(
         self,
         chunks: List[dict],
-        batch_size: int = 100
+        batch_size: int = 96  # Cohere allows up to 96 texts per request
     ) -> List[dict]:
         """
         Generate embeddings for list of chunks with batching.
 
         Args:
             chunks: List of chunk dicts with 'content' key
-            batch_size: Number of chunks to embed per batch
+            batch_size: Number of chunks to embed per batch (max 96 for Cohere)
 
         Returns:
             List of chunks with 'embedding' added
