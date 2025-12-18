@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: rag-chatbot-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: OPENAI_GENERATION_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_MAX_TOKENS
+        value: 500
+      - key: OPENAI_TEMPERATURE
+        value: 0.0
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_COLLECTION_NAME
+        value: book_chunks_v1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rag-chatbot-db
+          property: connectionString
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: 10000
+      - key: API_RELOAD
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: API_KEY_ENABLED
+        value: false
+      - key: CHUNK_SIZE
+        value: 500
+      - key: CHUNK_OVERLAP
+        value: 50
+      - key: TOP_K_RETRIEVAL
+        value: 5
+      - key: SIMILARITY_THRESHOLD
+        value: 0.7
+      - key: RATE_LIMIT_PER_HOUR
+        value: 60
+      - key: DEV_MODE
+        value: false
+
+databases:
+  - name: rag-chatbot-db
+    databaseName: chatbot_db
+    user: chatbot_user
+    plan: free
