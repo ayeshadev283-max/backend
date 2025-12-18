@@ -14,7 +14,7 @@ class EmbeddingService:
 
     def __init__(self):
         """Initialize Google Gemini client."""
-        self.client = genai.Client(api_key=settings.google_api_key)
+        genai.configure(api_key=settings.google_api_key)
         self.model = settings.google_embedding_model
 
     def embed_text(
@@ -55,11 +55,11 @@ class EmbeddingService:
 
                 # Google's embedding API processes one text at a time
                 for text in texts:
-                    result = self.client.models.embed_content(
+                    result = genai.embed_content(
                         model=self.model,
-                        contents=[text]
+                        content=text
                     )
-                    embeddings.append(result.embeddings[0].values)
+                    embeddings.append(result['embedding'])
 
                 logger.info(
                     f"Generated {len(embeddings)} embeddings "

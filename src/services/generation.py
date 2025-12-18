@@ -15,8 +15,9 @@ class GenerationService:
 
     def __init__(self):
         """Initialize Google Gemini client."""
-        self.client = genai.Client(api_key=settings.google_api_key)
+        genai.configure(api_key=settings.google_api_key)
         self.model_name = settings.google_generation_model
+        self.model = genai.GenerativeModel(self.model_name)
         self.max_tokens = settings.google_max_tokens
         self.temperature = settings.google_temperature
         self.circuit_breaker_failures = 0
@@ -71,13 +72,12 @@ class GenerationService:
             try:
                 start_time = time.time()
 
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=full_prompt,
-                    config={
-                        "temperature": self.temperature,
-                        "max_output_tokens": self.max_tokens,
-                    }
+                response = self.model.generate_content(
+                    full_prompt,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=self.temperature,
+                        max_output_tokens=self.max_tokens,
+                    )
                 )
 
                 latency_ms = int((time.time() - start_time) * 1000)
