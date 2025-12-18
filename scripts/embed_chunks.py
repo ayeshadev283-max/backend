@@ -143,8 +143,8 @@ def main():
         if args.collection:
             qdrant_client.collection_name = args.collection
 
-        # Ensure collection exists
-        qdrant_client.ensure_collection(vector_size=1536)
+        # Ensure collection exists (1024 for Cohere embed-english-v3.0)
+        qdrant_client.ensure_collection(vector_size=1024)
 
         print(f"✓ Connected to collection: {qdrant_client.collection_name}", file=sys.stderr)
 
